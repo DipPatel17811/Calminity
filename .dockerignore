@@ -1,4 +1,3 @@
-# Ignore Python caches, venvs and git
 __pycache__
 *.pyc
 *.pyo
@@ -6,5 +5,4 @@ __pycache__
 venv
 env
 .git
-.gitignore
 .DS_Store
