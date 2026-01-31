@@ -1,27 +1,33 @@
-# Dockerfile for CalmiAI minimal server (SpeechRecognition + gTTS + Gemini)
+# Dockerfile - robust copy of repo and auto-detect app location
 FROM python:3.11-slim
 
-# Install ffmpeg and system packages required by pydub and audio handling
+# Install ffmpeg and system deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     build-essential \
     libsndfile1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Set workdir
 WORKDIR /app
 
-# Copy server files
-COPY server/ /app/
+# Copy entire repo into image
+COPY . /app
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r /app/requirements.txt
+# Install Python deps from either /app/server/requirements.txt or /app/requirements.txt
+RUN if [ -f /app/server/requirements.txt ] ; then \
+      pip install --no-cache-dir -r /app/server/requirements.txt ; \
+    elif [ -f /app/requirements.txt ] ; then \
+      pip install --no-cache-dir -r /app/requirements.txt ; \
+    else \
+      echo "No requirements.txt found - continuing" ; \
+    fi
 
-# Expose port (Render provides PORT env)
+# Make entrypoint executable
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 EXPOSE 5000
-
-# Ensure a non-root user could be used in future; for now run as default user
 ENV PORT=5000
 
-# Run with gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app", "--workers", "1", "--threads", "4"]
+# Entrypoint will pick correct app module (server.app or app)
+ENTRYPOINT ["/app/entrypoint.sh"]
