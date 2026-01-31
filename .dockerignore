@@ -1,0 +1,10 @@
+# Ignore Python caches, venvs and git
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+venv
+env
+.git
+.gitignore
+.DS_Store

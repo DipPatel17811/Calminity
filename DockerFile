@@ -1,0 +1,27 @@
+# Dockerfile for CalmiAI minimal server (SpeechRecognition + gTTS + Gemini)
+FROM python:3.11-slim
+
+# Install ffmpeg and system packages required by pydub and audio handling
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    build-essential \
+    libsndfile1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set workdir
+WORKDIR /app
+
+# Copy server files
+COPY server/ /app/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+# Expose port (Render provides PORT env)
+EXPOSE 5000
+
+# Ensure a non-root user could be used in future; for now run as default user
+ENV PORT=5000
+
+# Run with gunicorn
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app", "--workers", "1", "--threads", "4"]
