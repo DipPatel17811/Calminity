@@ -37,7 +37,7 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     raise RuntimeError("GEMINI_API_KEY environment variable is required")
 
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "models/gemini-1.5-flash")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "models/gemini-2.5-flash")
 # optional: max tokens cap
 GEMINI_MAX_TOKENS = int(os.environ.get("GEMINI_MAX_TOKENS", "400"))
 
@@ -318,3 +318,4 @@ if __name__ == "__main__":
     # Use environment PORT if provided (Render sets PORT)
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
